@@ -21,9 +21,13 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import {MuiPickersUtilsProvider,KeyboardDatePicker} from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import RadioGroup from '@material-ui/core/Radio';
+import Radio from '@material-ui/core/Radio';
 
 const useStyles = makeStyles(theme=>({
-
+    service:{
+      fontWeight:400,
+    }
 }))
 
 function createData(name,date,service,features,complexity,platforms,users,total){
@@ -31,6 +35,10 @@ function createData(name,date,service,features,complexity,platforms,users,total)
 }
 
 export default function ProjectManager() {
+  const [service,setService] = useState('');
+  const [total,setTotal] = useState('');
+  const [date,setDate] = useState(new Date());
+  const [name,setName] = useState('');
   const [websiteChecked,setWebsiteChecked] = useState(false);
   const [iosChecked,setiosChecked] = useState(false);
   const [androidChecked,setAndroidChecked] = useState(false);
@@ -99,14 +107,61 @@ export default function ProjectManager() {
             </Table>
           </TableContainer>
         </Grid>
-        <Dialog open={dialogOpen} onClose={()=>setDialogOpen(false)}>
-          <Grid container justify="center" alignItems="center">
+        <Dialog fullWidth maxWidth="md" open={dialogOpen} onClose={()=>setDialogOpen(false)}>
+          <Grid container direction="row" justify="center">
             <Grid item>
               <Typography gutterBottom variant="h1">
                 Add a new Project
               </Typography>
             </Grid>
           </Grid>
+          <DialogContent>
+            <Grid direction="row" container justify="space-between">
+              <Grid item>
+              <Grid item sm>
+                <Grid container direction="column">
+                  <Grid item>
+                    <TextField label="Name" id="name" value={name} onChange={(event)=>{setName(event.target.value)}}></TextField>
+                  </Grid>
+                  <Grid item>
+                  <Grid container direction="column">
+                    <Grid item>
+                      <Typography variant="h4">
+                        Service
+                      </Typography>
+                    </Grid>
+                      <Grid item>
+                      <RadioGroup aria-label="service" name="service" label="service" value={service} onChange={event=>setService(event.target.value)}>
+                        <FormControlLabel value="Website" label="Website" control={<Radio/>}/>
+                        <FormControlLabel  value="Mobile Apps" label="Mobile Apps" control={<Radio/>}/>
+                        <FormControlLabel  value="Custom Software" label="Custom Software" control={<Radio/>}/>
+                      </RadioGroup>
+                    </Grid>
+                  </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+              </Grid>
+              <Grid item>
+              <Grid item sm>
+                <Grid container direction="column">
+                  <Grid item style={{marginTop:16}}>
+                    <KeyboardDatePicker format="MM/dd/yyyy" value={date} onChange={newDate=>setDate(newDate)}/>
+                  </Grid>
+                </Grid>
+              </Grid>
+              </Grid>
+              <Grid item>
+              <Grid item sm>
+                <Grid container direction="column">
+                  <Grid item>
+                    <TextField InputProps={{startAdornment:<InputAdornment position="start">₹</InputAdornment>}} label="Total" id="total" value={total} onChange={(event)=>{setTotal(event.target.value)}}></TextField>
+                  </Grid>
+                </Grid>
+              </Grid>
+              </Grid>
+            </Grid>
+          </DialogContent>
         </Dialog>
       </Grid>
       </MuiPickersUtilsProvider>
