@@ -54,6 +54,7 @@ function createData(name,date,service,features,complexity,platforms,users,total)
 export default function ProjectManager() {
   const platformOption = ['Web','Android','iOS'];
   const featureOption = ['Photo/Video','GPS','File Transfer','Users/Authentication','Biometrics','Push Notifications'];
+  const websiteOption = ['Basic','Interactive','E-Commerce'];
 
   const [platforms,setPlatforms] = useState([]);
   const [features,setFeatures] = useState([]);
@@ -69,7 +70,6 @@ export default function ProjectManager() {
   const [customSoftwareChecked,setCustomSoftwareChecked] = useState(false);
   const [dialogOpen,setDialogOpen] = useState(false);
   const [rows,setRows] = useState([createData('Manas Saxena','24/05/2020','Website','E-Commerce','N/A','N/A','N/A','$1500'),
-  createData('Manas Saxena','24/05/2020','Website','Users/Authentication/Dashboard/More/GPS/Push Notifications','N/A','N/A','N/A','$1500'),
   createData('Manas Saxena','24/05/2020','Website','E-Commerce','N/A','N/A','N/A','$1500')
   ]);
 
@@ -81,12 +81,20 @@ export default function ProjectManager() {
       format(date,"MM-dd-yy"),
       service,
       features.join(", "),
-      complexity,
-      platforms.join(", "),
-      users,
-      total
+      service=="Website"?"N/A":complexity,
+      service=="Website"?"N/A":platforms.join(", "),
+      service=="Website"?"N/A":users,
+      `₹${total}`
       )])
       setDialogOpen(false);
+      setName("");
+      setDate(new Date());
+      setService("");
+      setFeatures([]);
+      setComplexity("");
+      setPlatforms([]);
+      setUsers("");
+      setTotal("");
   }
 
   return(
@@ -170,7 +178,7 @@ export default function ProjectManager() {
                       </Typography>
                     </Grid>
                       <Grid item>
-                      <RadioGroup aria-label="service" name="service" label="service" value={service} onChange={event=>setService(event.target.value)}>
+                      <RadioGroup aria-label="service" name="service" label="service" value={service} onChange={event=>{setService(event.target.value);setFeatures([])}}>
                         <FormControlLabel classes={{label:classes.service}} value="Website" label="Website" control={<Radio/>}/>
                         <FormControlLabel classes={{label:classes.service}} value="Mobile Apps" label="Mobile Apps" control={<Radio/>}/>
                         <FormControlLabel classes={{label:classes.service}} value="Custom Software" label="Custom Software" control={<Radio/>}/>
@@ -178,6 +186,7 @@ export default function ProjectManager() {
                     </Grid>
                     <Grid item style={{marginTop:"5em"}}>
                       <Select 
+                      disabled={service=="Website"}
                       style={{width:"12em"}}
                       id="platforms" 
                       labelId="platforms" 
@@ -210,9 +219,9 @@ export default function ProjectManager() {
                     </Grid>
                       <Grid item>
                       <RadioGroup aria-label="complexity" name="complexity" label="complexity" value={complexity} onChange={event=>setComplexity(event.target.value)}>
-                        <FormControlLabel classes={{label:classes.service}} value="Low" label="Low" control={<Radio/>}/>
-                        <FormControlLabel classes={{label:classes.service}} value="Medium" label="Medium" control={<Radio/>}/>
-                        <FormControlLabel classes={{label:classes.service}} value="Hard" label="Hard" control={<Radio/>}/>
+                        <FormControlLabel disabled={service=="Website"} classes={{label:classes.service}} value="Low" label="Low" control={<Radio/>}/>
+                        <FormControlLabel disabled={service=="Website"} classes={{label:classes.service}} value="Medium" label="Medium" control={<Radio/>}/>
+                        <FormControlLabel disabled={service=="Website"} classes={{label:classes.service}} value="Hard" label="Hard" control={<Radio/>}/>
                       </RadioGroup>
                     </Grid>
                   </Grid>
@@ -235,13 +244,13 @@ export default function ProjectManager() {
                     </Grid>
                       <Grid item>
                       <RadioGroup aria-label="users" name="users" label="users" value={users} onChange={event=>setUsers(event.target.value)}>
-                        <FormControlLabel classes={{label:classes.service,root:classes.users}} value="0-10" label="0-10" control={<Radio/>}/>
-                        <FormControlLabel classes={{label:classes.service,root:classes.users}} value="10-100" label="10-100" control={<Radio/>}/>
-                        <FormControlLabel classes={{label:classes.service,root:classes.users}} value="100+" label="100+" control={<Radio/>}/>
+                        <FormControlLabel disabled={service=="Website"} classes={{label:classes.service,root:classes.users}} value="0-10" label="0-10" control={<Radio/>}/>
+                        <FormControlLabel disabled={service=="Website"} classes={{label:classes.service,root:classes.users}} value="10-100" label="10-100" control={<Radio/>}/>
+                        <FormControlLabel disabled={service=="Website"} classes={{label:classes.service,root:classes.users}} value="100+" label="100+" control={<Radio/>}/>
                       </RadioGroup>
                     </Grid>
                     <Grid item style={{marginTop:"5em"}}>
-                      <Select 
+                      <Select
                       style={{width:"12em"}}
                       id="features" 
                       MenuProps={{style:{zIndex:1302}}}
@@ -252,7 +261,7 @@ export default function ProjectManager() {
                       displayEmpty
                       renderValue={features.length > 0 ? undefined : ()=>"Features"}
                       >
-                      {featureOption.map(option=> <MenuItem key={option} value={option}>{option}</MenuItem>)}
+                      {service!='Website'?featureOption.map(option=> <MenuItem key={option} value={option}>{option}</MenuItem>):websiteOption.map(option=> <MenuItem key={option} value={option}>{option}</MenuItem>)}
                       </Select>
                     </Grid>
                   </Grid>
@@ -265,12 +274,29 @@ export default function ProjectManager() {
               <Grid item>
                 <Button color="primary"
                 onClick={()=>{setDialogOpen(false)}}
-                style={{fontWeight:300}}>
+                style={{fontWeight:300}}
+                >
                 
                   Cancel
                 </Button>
               </Grid>
-              <Button variant="contained" className={classes.addProject} onClick={()=>addProject()}>
+              <Button
+              variant="contained" 
+              className={classes.addProject} 
+              onClick={()=>addProject()}
+              disabled={service === "Website"
+              ? name.length === 0 ||
+                total.length === 0 ||
+                features.length === 0 ||
+                features.length > 1
+              : name.length === 0 ||
+                total.length === 0 ||
+                features.length === 0 ||
+                users.length === 0 ||
+                complexity.length === 0 ||
+                platforms.length === 0 ||
+                service.length === 0}
+              >
                 Add Project +
               </Button>
             </Grid>
