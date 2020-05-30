@@ -124,7 +124,7 @@ export default function ProjectManager() {
                     <TextField label="Name" id="name" value={name} onChange={(event)=>{setName(event.target.value)}}></TextField>
                   </Grid>
                   <Grid item>
-                  <Grid container direction="column">
+                  <Grid item container direction="column">
                     <Grid item>
                       <Typography variant="h4">
                         Service
