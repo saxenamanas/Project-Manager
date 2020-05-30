@@ -125,6 +125,11 @@ export default createMuiTheme({
           borderBottom: `2px solid ${arcBlue}`
         }
       }
+    },
+    MuiSelect:{
+      icon:{
+        color:arcOrange
+      }
     }
   }
 });

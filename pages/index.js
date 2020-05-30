@@ -23,11 +23,28 @@ import {MuiPickersUtilsProvider,KeyboardDatePicker} from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Button from '@material-ui/core/Button';
+import {format} from 'date-fns';
+
 
 const useStyles = makeStyles(theme=>({
     service:{
       fontWeight:400,
+    },
+    users:{
+      marginRight:0,
+    },
+    addProject:{
+      borderRadius:30,
+      backgroundColor:"#FFBA60",
+      textTransform:"none",
+      "&:hover":{
+        backgroundColor:theme.palette.secondary.light,
+      }
     }
+    
 }))
 
 function createData(name,date,service,features,complexity,platforms,users,total){
@@ -35,6 +52,13 @@ function createData(name,date,service,features,complexity,platforms,users,total)
 }
 
 export default function ProjectManager() {
+  const platformOption = ['Web','Android','iOS'];
+  const featureOption = ['Photo/Video','GPS','File Transfer','Users/Authentication','Biometrics','Push Notifications'];
+
+  const [platforms,setPlatforms] = useState([]);
+  const [features,setFeatures] = useState([]);
+  const [complexity,setComplexity] = useState('');
+  const [users,setUsers] = useState('');
   const [service,setService] = useState('');
   const [total,setTotal] = useState('');
   const [date,setDate] = useState(new Date());
@@ -50,6 +74,21 @@ export default function ProjectManager() {
   ]);
 
   const classes = useStyles();
+
+  const addProject = ()=>{
+    setRows([...rows,createData(
+      name,
+      format(date,"MM-dd-yy"),
+      service,
+      features.join(", "),
+      complexity,
+      platforms.join(", "),
+      users,
+      total
+      )])
+      setDialogOpen(false);
+  }
+
   return(
     <React.Fragment>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -124,7 +163,7 @@ export default function ProjectManager() {
                     <TextField label="Name" id="name" value={name} onChange={(event)=>{setName(event.target.value)}}></TextField>
                   </Grid>
                   <Grid item>
-                  <Grid item container direction="column">
+                  <Grid item container style={{marginTop:"5em"}} direction="column">
                     <Grid item>
                       <Typography variant="h4">
                         Service
@@ -132,9 +171,48 @@ export default function ProjectManager() {
                     </Grid>
                       <Grid item>
                       <RadioGroup aria-label="service" name="service" label="service" value={service} onChange={event=>setService(event.target.value)}>
-                        <FormControlLabel value="Website" label="Website" control={<Radio/>}/>
-                        <FormControlLabel  value="Mobile Apps" label="Mobile Apps" control={<Radio/>}/>
-                        <FormControlLabel  value="Custom Software" label="Custom Software" control={<Radio/>}/>
+                        <FormControlLabel classes={{label:classes.service}} value="Website" label="Website" control={<Radio/>}/>
+                        <FormControlLabel classes={{label:classes.service}} value="Mobile Apps" label="Mobile Apps" control={<Radio/>}/>
+                        <FormControlLabel classes={{label:classes.service}} value="Custom Software" label="Custom Software" control={<Radio/>}/>
+                      </RadioGroup>
+                    </Grid>
+                    <Grid item style={{marginTop:"5em"}}>
+                      <Select 
+                      style={{width:"12em"}}
+                      id="platforms" 
+                      labelId="platforms" 
+                      multiple
+                      value={platforms}
+                      onChange={event=>setPlatforms(event.target.value)}
+                      displayEmpty
+                      renderValue={platforms.length > 0 ? undefined : ()=>"Platforms"}
+                      >
+                      {platformOption.map(option=> <MenuItem key={option} value={option}>{option}</MenuItem>)}
+                      </Select>
+                    </Grid>
+                  </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+              </Grid>
+              <Grid item>
+              <Grid item sm>
+                <Grid container alignItems="center" direction="column">
+                  <Grid item style={{marginTop:16}}>
+                    <KeyboardDatePicker format="MM/dd/yyyy" value={date} onChange={newDate=>setDate(newDate)}/>
+                  </Grid>
+                  <Grid item>
+                  <Grid item container style={{marginTop:"5em"}} direction="column">
+                    <Grid item>
+                      <Typography variant="h4">
+                        Complexity
+                      </Typography>
+                    </Grid>
+                      <Grid item>
+                      <RadioGroup aria-label="complexity" name="complexity" label="complexity" value={complexity} onChange={event=>setComplexity(event.target.value)}>
+                        <FormControlLabel classes={{label:classes.service}} value="Low" label="Low" control={<Radio/>}/>
+                        <FormControlLabel classes={{label:classes.service}} value="Medium" label="Medium" control={<Radio/>}/>
+                        <FormControlLabel classes={{label:classes.service}} value="Hard" label="Hard" control={<Radio/>}/>
                       </RadioGroup>
                     </Grid>
                   </Grid>
@@ -144,22 +222,57 @@ export default function ProjectManager() {
               </Grid>
               <Grid item>
               <Grid item sm>
-                <Grid container direction="column">
-                  <Grid item style={{marginTop:16}}>
-                    <KeyboardDatePicker format="MM/dd/yyyy" value={date} onChange={newDate=>setDate(newDate)}/>
-                  </Grid>
-                </Grid>
-              </Grid>
-              </Grid>
-              <Grid item>
-              <Grid item sm>
-                <Grid container direction="column">
+                <Grid container alignItems="flex-end" direction="column">
                   <Grid item>
                     <TextField InputProps={{startAdornment:<InputAdornment position="start">₹</InputAdornment>}} label="Total" id="total" value={total} onChange={(event)=>{setTotal(event.target.value)}}></TextField>
                   </Grid>
+                  <Grid item>
+                  <Grid item container style={{marginTop:"5em"}} direction="column">
+                    <Grid item>
+                      <Typography variant="h4">
+                        Users
+                      </Typography>
+                    </Grid>
+                      <Grid item>
+                      <RadioGroup aria-label="users" name="users" label="users" value={users} onChange={event=>setUsers(event.target.value)}>
+                        <FormControlLabel classes={{label:classes.service,root:classes.users}} value="0-10" label="0-10" control={<Radio/>}/>
+                        <FormControlLabel classes={{label:classes.service,root:classes.users}} value="10-100" label="10-100" control={<Radio/>}/>
+                        <FormControlLabel classes={{label:classes.service,root:classes.users}} value="100+" label="100+" control={<Radio/>}/>
+                      </RadioGroup>
+                    </Grid>
+                    <Grid item style={{marginTop:"5em"}}>
+                      <Select 
+                      style={{width:"12em"}}
+                      id="features" 
+                      MenuProps={{style:{zIndex:1302}}}
+                      labelId="features" 
+                      multiple
+                      value={features}
+                      onChange={event=>setFeatures(event.target.value)}
+                      displayEmpty
+                      renderValue={features.length > 0 ? undefined : ()=>"Features"}
+                      >
+                      {featureOption.map(option=> <MenuItem key={option} value={option}>{option}</MenuItem>)}
+                      </Select>
+                    </Grid>
+                  </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
               </Grid>
+            </Grid>
+            <Grid container style={{marginTop:"3em"}} justify="center">
+              <Grid item>
+                <Button color="primary"
+                onClick={()=>{setDialogOpen(false)}}
+                style={{fontWeight:300}}>
+                
+                  Cancel
+                </Button>
+              </Grid>
+              <Button variant="contained" className={classes.addProject} onClick={()=>addProject()}>
+                Add Project +
+              </Button>
             </Grid>
           </DialogContent>
         </Dialog>
