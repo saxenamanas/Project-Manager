@@ -47,8 +47,8 @@ const useStyles = makeStyles(theme=>({
     
 }))
 
-function createData(name,date,service,features,complexity,platforms,users,total){
-  return{name,date,service,features,complexity,platforms,users,total}
+function createData(name,date,service,features,complexity,platforms,users,total,search){
+  return{name,date,service,features,complexity,platforms,users,total,search}
 }
 
 export default function ProjectManager() {
@@ -56,6 +56,7 @@ export default function ProjectManager() {
   const featureOption = ['Photo/Video','GPS','File Transfer','Users/Authentication','Biometrics','Push Notifications'];
   const websiteOption = ['Basic','Interactive','E-Commerce'];
 
+  const [search,setSearch] = useState('');
   const [platforms,setPlatforms] = useState([]);
   const [features,setFeatures] = useState([]);
   const [complexity,setComplexity] = useState('');
@@ -69,11 +70,32 @@ export default function ProjectManager() {
   const [androidChecked,setAndroidChecked] = useState(false);
   const [customSoftwareChecked,setCustomSoftwareChecked] = useState(false);
   const [dialogOpen,setDialogOpen] = useState(false);
-  const [rows,setRows] = useState([createData('Manas Saxena','24/05/2020','Website','E-Commerce','N/A','N/A','N/A','$1500'),
-  createData('Manas Saxena','24/05/2020','Website','E-Commerce','N/A','N/A','N/A','$1500')
-  ]);
+  const [rows,setRows] = useState([]);
 
   const classes = useStyles();
+
+  const handleChange = (event) => {
+    setSearch(event.target.value);
+
+    const rowData = rows.map(row =>
+      Object.values(row).filter(option => option !== true && option !== false)
+    );
+
+    const matches = rowData.map(row =>
+      row.map(option =>
+        option.toLowerCase().includes(event.target.value.toLowerCase())
+      )
+    );
+
+    const newRows = [...rows];
+    matches.map((row, index) =>
+      row.includes(true)
+        ? (newRows[index].search = true)
+        : (newRows[index].search = false)
+    );
+
+    setRows(newRows);
+  }
 
   const addProject = ()=>{
     setRows([...rows,createData(
@@ -84,7 +106,8 @@ export default function ProjectManager() {
       service=="Website"?"N/A":complexity,
       service=="Website"?"N/A":platforms.join(", "),
       service=="Website"?"N/A":users,
-      `₹${total}`
+      `₹${total}`,
+      true
       )])
       setDialogOpen(false);
       setName("");
@@ -107,7 +130,14 @@ export default function ProjectManager() {
           </Typography>
         </Grid>
         <Grid item>
-          <TextField placeholder="Search project details or create a new entry." style={{width:"35em",marginLeft:"5em"}} InputProps={{endAdornment:(<InputAdornment onClick={()=>setDialogOpen(true)} style={{cursor:"pointer"}} position="end"><AddIcon style={{fontSize:"2em"}} color="primary"></AddIcon></InputAdornment>)}}></TextField>
+          <TextField 
+          value={search}
+          onChange={(event)=>{handleChange(event)}}
+          placeholder="Search project details or create a new entry." 
+          style={{width:"35em",marginLeft:"5em"}} 
+          InputProps={{endAdornment:(<InputAdornment onClick={()=>setDialogOpen(true)} 
+          style={{cursor:"pointer"}} position="end"><AddIcon style={{fontSize:"2em"}} 
+          color="primary"></AddIcon></InputAdornment>)}}></TextField>
         </Grid>
         <Grid style={{marginLeft:"5em",marginTop:"2em"}} item>
           <FormGroup row>
@@ -140,7 +170,7 @@ export default function ProjectManager() {
                 </TableRow>
               </TableHead>
                 <TableBody>
-                  {rows.map((row,index)=><TableRow key={index}>
+                  {rows.filter(row=>row.search).map((row,index)=><TableRow key={index}>
                     <TableCell align="center">{row.name}</TableCell>
                     <TableCell align="center">{row.date}</TableCell>
                     <TableCell align="center">{row.service}</TableCell>
